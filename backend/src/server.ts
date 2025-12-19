@@ -6,6 +6,8 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
+import { initSocket } from "./sockets";
+
 
 dotenv.config();
 
@@ -22,6 +24,9 @@ export const io = new Server(server, {
     credentials: true,
   },
 });
+
+initSocket(io);
+
 
 // ✅ Middlewares 
 app.use(cors({

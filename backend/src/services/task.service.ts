@@ -1,10 +1,8 @@
 import * as taskRepo from "../repositories/task.repository";
 import { io } from "../server";
+import { getUserSocket } from "../sockets";
 
-export const createTaskService = async (
-  creatorId: string,
-  data: any
-) => {
+export const createTaskService = async (creatorId: string, data: any) => {
   const task = await taskRepo.createTask({
     ...data,
     creatorId,
@@ -27,10 +25,14 @@ export const updateTaskService = async (id: string, data: any) => {
   io.emit("taskUpdated", task);
 
   if (data.assignedToId) {
-    io.emit("taskAssigned", {
-      taskId: task.id,
-      assignedToId: data.assignedToId,
-    });
+    const socketId = getUserSocket(data.assignedToId);
+
+    if (socketId) {
+      io.to(socketId).emit("taskAssigned", {
+        taskId: task.id,
+        message: "A new task has been assigned to you",
+      });
+    }
   }
 
   return task;
