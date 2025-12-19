@@ -8,6 +8,8 @@ import {
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { Search } from "lucide-react";
+import toast from "react-hot-toast";
+
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -31,20 +33,38 @@ export default function Dashboard() {
   }, []);
 
   const handleCreate = async (data: any) => {
+  try {
     await createTask(data);
+    toast.success("Task created successfully");
     setShowModal(false);
     fetchTasks();
-  };
+  } catch {
+    toast.error("Failed to create task");
+  }
+};
+
 
   const handleStatusChange = async (id: string, status: string) => {
+  try {
     await updateTaskStatus(id, status);
+    toast.success("Task updated");
     fetchTasks();
-  };
+  } catch {
+    toast.error("Failed to update task");
+  }
+};
+
 
   const handleDelete = async (id: string) => {
+  try {
     await deleteTask(id);
+    toast.success("Task deleted");
     fetchTasks();
-  };
+  } catch {
+    toast.error("Failed to delete task");
+  }
+};
+
 
   // 🔥 Filtered tasks
   const filteredTasks = tasks.filter((task) => {

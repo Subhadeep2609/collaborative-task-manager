@@ -4,6 +4,8 @@ import { registerUser } from "../api/auth.api";
 import { useAuth } from "../context/auth.context";
 import AuthLayout from "../layouts/AuthLayout";
 import InputField from "../components/InputField";
+import toast from "react-hot-toast";
+
 
 export default function Register() {
   const { setUser } = useAuth();
@@ -23,9 +25,12 @@ export default function Register() {
     try {
       const user = await registerUser({ name, email, password });
       setUser(user);
+      toast.success("Registration successful");
       navigate("/");
     } catch {
       setError("Registration failed");
+      toast.error("Registration failed due to some error");
+
     } finally {
       setLoading(false);
     }

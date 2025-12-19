@@ -4,6 +4,8 @@ import { loginUser } from "../api/auth.api";
 import { useAuth } from "../context/auth.context";
 import AuthLayout from "../layouts/AuthLayout";
 import InputField from "../components/InputField";
+import toast from "react-hot-toast";
+
 
 export default function Login() {
   const { setUser } = useAuth();
@@ -22,9 +24,11 @@ export default function Login() {
     try {
       const user = await loginUser({ email, password });
       setUser(user);
+      toast.success("Login successful");
       navigate("/");
     } catch {
       setError("Invalid email or password");
+      toast.error("Invalid credentials");
     } finally {
       setLoading(false);
     }
