@@ -84,15 +84,40 @@ export const getDashboardTasks = (userId: string) => {
 /**
  * Update task (creator OR assignee)
  */
-export const updateTask = (taskId: string, userId: string, data: any) => {
+/**
+ * Update task (ONLY creator can reassign)
+ */
+export const updateTask = (
+  taskId: string,
+  userId: string,
+  data: any
+) => {
+  const { assignedToId, ...rest } = data;
+
   return prisma.task.update({
     where: {
       id: taskId,
-      OR: [{ creatorId: userId }, { assignedToId: userId }],
+      creatorId: userId, // 🔒 ONLY CREATOR CAN UPDATE
     },
-    data,
+    data: {
+      ...rest,
+
+      // 🔑 Explicit assignee update
+      ...(assignedToId !== undefined
+        ? {
+            assignee: {
+              connect: { id: assignedToId },
+            },
+          }
+        : {}),
+    },
+    include: {
+      creator: { select: { id: true, name: true, email: true } },
+      assignee: { select: { id: true, name: true, email: true } },
+    },
   });
 };
+
 
 /**
  * Delete task (creator only)

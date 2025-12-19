@@ -3,6 +3,7 @@ import {
   getTasks,
   createTask,
   updateTaskStatus,
+  updateTask, // ✅ NEW
   deleteTask,
 } from "../api/task.api";
 import TaskCard from "../components/TaskCard";
@@ -50,7 +51,7 @@ export default function Dashboard() {
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
-      await updateTaskStatus(id, status);
+      await updateTaskStatus(id, status as any);
       toast.success("Task updated");
       fetchTasks();
     } catch {
@@ -72,6 +73,21 @@ export default function Dashboard() {
     await logout();
     toast.success("Logged out successfully");
     navigate("/");
+  };
+
+  // ✅ FIXED: assignee change uses updateTask
+  const handleAssigneeChange = async (
+    id: string,
+    assignedToId: string
+  ) => {
+    try {
+      await updateTask(id, { assignedToId });
+      toast.success("Assignee updated");
+      fetchTasks();
+    } catch (err) {
+      toast.error("Failed to update assignee");
+      console.error(err);
+    }
   };
 
   // 🔥 Filtered tasks
@@ -102,6 +118,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 px-4 py-10">
       <div className="mx-auto max-w-6xl space-y-10">
+
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -229,6 +246,7 @@ export default function Dashboard() {
                 task={task}
                 onStatusChange={handleStatusChange}
                 onDelete={handleDelete}
+                onAssigneeChange={handleAssigneeChange}
               />
             ))}
           </div>

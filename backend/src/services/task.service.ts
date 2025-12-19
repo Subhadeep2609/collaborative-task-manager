@@ -13,13 +13,11 @@ export const createTaskService = async (userId: string, data: any) => {
     priority: data.priority,
     status: data.status,
 
-    // 🔒 Always creator = logged-in user
+    // 🔒 creator is always logged-in user
     creatorId: userId,
 
-    // ✅ Assignee logic (explicit)
-    assignedToId: data.assignedToId
-      ? data.assignedToId
-      : userId, // default → self
+    // ✅ assignee comes EXACTLY from frontend
+    assignedToId: data.assignedToId,
   });
 
   io.emit("taskCreated", task);
@@ -34,27 +32,25 @@ export const getTasksService = async (userId: string) => {
 };
 
 /**
- * Update task (status / assignment)
+ * Update task (status / reassignment)
+ * 🔒 Only creator can reassign (repo enforces)
  */
 export const updateTaskService = async (
   userId: string,
   taskId: string,
   data: any
 ) => {
-  const task = await taskRepo.updateTask(taskId, userId, {
-    ...data,
-    assignedToId: data.assignedToId ?? undefined,
-  });
+  const task = await taskRepo.updateTask(taskId, userId, data);
 
   io.emit("taskUpdated", task);
 
-  // 🔔 Notify newly assigned user
+  // 🔔 Notify new assignee (if reassigned)
   if (data.assignedToId && data.assignedToId !== userId) {
     const socketId = getUserSocket(data.assignedToId);
     if (socketId) {
       io.to(socketId).emit("taskAssigned", {
         taskId: task.id,
-        message: "A new task has been assigned to you",
+        message: `You have been assigned a task: ${task.title}`,
       });
     }
   }
@@ -63,7 +59,7 @@ export const updateTaskService = async (
 };
 
 /**
- * Delete task
+ * Delete task (creator only)
  */
 export const deleteTaskService = async (userId: string, taskId: string) => {
   const task = await taskRepo.deleteTask(taskId, userId);
