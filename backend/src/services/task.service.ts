@@ -5,12 +5,11 @@ import { getUserSocket } from "../sockets";
 export const createTaskService = async (userId: string, data: any) => {
   const task = await taskRepo.createTask({
     ...data,
-    assignedToId: userId, // ✅ correct FK
+    creatorId: userId,     // ✅ REQUIRED
+    assignedToId: userId,  // ✅ REQUIRED
   });
 
-  // Real-time update (safe broadcast)
   io.emit("taskCreated", task);
-
   return task;
 };
 
@@ -27,10 +26,8 @@ export const updateTaskService = async (
 
   io.emit("taskUpdated", task);
 
-  // Notify newly assigned user (if reassigned)
   if (data.assignedToId) {
     const socketId = getUserSocket(data.assignedToId);
-
     if (socketId) {
       io.to(socketId).emit("taskAssigned", {
         taskId: task.id,
@@ -44,9 +41,7 @@ export const updateTaskService = async (
 
 export const deleteTaskService = async (userId: string, taskId: string) => {
   const task = await taskRepo.deleteTask(taskId, userId);
-
   io.emit("taskDeleted", task.id);
-
   return task;
 };
 

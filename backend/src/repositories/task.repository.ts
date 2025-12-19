@@ -1,63 +1,54 @@
 import prisma from "../prisma/prismaClient";
 
 /**
- * Create task assigned to a user
+ * Create task with creator + assignee
  */
 export const createTask = (data: any) => {
   return prisma.task.create({
-    data,
+    data: {
+      title: data.title,
+      description: data.description,
+      dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+      priority: data.priority,
+      status: data.status,
+
+      creator: {
+        connect: { id: data.creatorId },
+      },
+
+      assignee: {
+        connect: { id: data.assignedToId },
+      },
+    },
   });
 };
 
 /**
- * Get tasks only for logged-in user
+ * Fetch tasks for logged-in user
  */
 export const getTasksByUser = (userId: string) => {
   return prisma.task.findMany({
-    where: {
-      assignedToId: userId,
-    },
+    where: { assignedToId: userId },
     orderBy: { createdAt: "desc" },
   });
 };
 
-/**
- * Update task ONLY if it belongs to user
- */
-export const updateTask = (
-  taskId: string,
-  userId: string,
-  data: any
-) => {
-  return prisma.task.updateMany({
-    where: {
-      id: taskId,
-      assignedToId: userId,
-    },
+export const updateTask = (taskId: string, userId: string, data: any) => {
+  return prisma.task.update({
+    where: { id: taskId },
     data,
   });
 };
 
-/**
- * Delete task ONLY if it belongs to user
- */
 export const deleteTask = (taskId: string, userId: string) => {
-  return prisma.task.deleteMany({
-    where: {
-      id: taskId,
-      assignedToId: userId,
-    },
+  return prisma.task.delete({
+    where: { id: taskId },
   });
 };
 
-/**
- * Dashboard summary tasks
- */
 export const getDashboardTasks = (userId: string) => {
   return prisma.task.findMany({
-    where: {
-      assignedToId: userId,
-    },
+    where: { assignedToId: userId },
     orderBy: { createdAt: "desc" },
   });
 };
