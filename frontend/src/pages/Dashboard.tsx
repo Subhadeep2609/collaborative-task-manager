@@ -61,6 +61,15 @@ export default function Dashboard() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.status === "COMPLETED").length;
+  const inProgressTasks = tasks.filter(
+    (t) => t.status === "IN_PROGRESS"
+  ).length;
+  const pendingTasks = tasks.filter(
+    (t) => t.status === "TODO" || t.status === "REVIEW"
+  ).length;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 px-4 py-10">
       <div className="mx-auto max-w-6xl space-y-10">
@@ -79,6 +88,37 @@ export default function Dashboard() {
           >
             + New Task
           </button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="rounded-2xl bg-white/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
+            <p className="text-sm text-gray-500">Total Tasks</p>
+            <p className="mt-1 text-3xl font-bold text-gray-900">
+              {totalTasks}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-green-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
+            <p className="text-sm text-green-700">Completed</p>
+            <p className="mt-1 text-3xl font-bold text-green-800">
+              {completedTasks}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-yellow-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
+            <p className="text-sm text-yellow-700">In Progress</p>
+            <p className="mt-1 text-3xl font-bold text-yellow-800">
+              {inProgressTasks}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-blue-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
+            <p className="text-sm text-blue-700">Pending</p>
+            <p className="mt-1 text-3xl font-bold text-blue-800">
+              {pendingTasks}
+            </p>
+          </div>
         </div>
 
         {/* 🔍 Filters Bar */}
@@ -127,9 +167,7 @@ export default function Dashboard() {
 
         {/* Loading */}
         {loading && (
-          <div className="text-center text-gray-600">
-            Loading tasks...
-          </div>
+          <div className="text-center text-gray-600">Loading tasks...</div>
         )}
 
         {/* Empty State */}
@@ -138,9 +176,7 @@ export default function Dashboard() {
             <p className="text-xl font-semibold text-gray-800">
               No matching tasks
             </p>
-            <p className="mt-2 text-gray-500">
-              Try adjusting your filters 🔍
-            </p>
+            <p className="mt-2 text-gray-500">Try adjusting your filters 🔍</p>
           </div>
         )}
 
