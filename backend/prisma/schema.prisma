@@ -14,23 +14,39 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
-  createdTasks  Task[] @relation("createdTasks")
-  assignedTasks Task[] @relation("assignedTasks")
+  createdTasks  Task[]    @relation("createdTasks")
+  assignedTasks Task[]    @relation("assignedTasks")
+  comments      Comment[]
 }
 
 model Task {
-  id            String   @id @default(uuid())
-  title         String   @db.VarChar(100)
-  description   String
-  dueDate       DateTime
-  priority      Priority
-  status        Status
-  creatorId     String
-  assignedToId  String
-  createdAt     DateTime @default(now())
+  id           String   @id @default(uuid())
+  title        String   @db.VarChar(100)
+  description  String
+  dueDate      DateTime
+  priority     Priority
+  status       Status
+  creatorId    String
+  assignedToId String
+  createdAt    DateTime @default(now())
 
-  creator   User @relation("createdTasks", fields: [creatorId], references: [id])
-  assignee  User @relation("assignedTasks", fields: [assignedToId], references: [id])
+  creator  User      @relation("createdTasks", fields: [creatorId], references: [id])
+  assignee User      @relation("assignedTasks", fields: [assignedToId], references: [id])
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  taskId String
+  userId String
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
 }
 
 enum Priority {
