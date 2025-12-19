@@ -21,7 +21,9 @@ export default function CreateTaskModal({ onClose, onCreate }: Props) {
     await onCreate({
       title,
       description,
-      dueDate: dueDate || undefined,
+      dueDate: dueDate
+    ? new Date(dueDate).toISOString()
+    : undefined,
       priority,
       status,
     });
