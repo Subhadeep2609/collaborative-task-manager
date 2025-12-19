@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  // Filters
+  // 🔍 Filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
@@ -74,9 +74,8 @@ export default function Dashboard() {
       await updateTask(id, { assignedToId });
       toast.success("Assignee updated");
       fetchTasks();
-    } catch (err) {
+    } catch {
       toast.error("Failed to update assignee");
-      console.error(err);
     }
   };
 
@@ -98,7 +97,7 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  /* ---------------- Filtering ---------------- */
+  /* ---------------- Filtering Logic ---------------- */
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -162,8 +161,9 @@ export default function Dashboard() {
           <Stat label="Pending" value={pendingTasks} color="blue" />
         </div>
 
-        {/* Filters */}
+        {/* 🔍 Filters */}
         <div className="flex flex-col gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-xl shadow sm:flex-row sm:items-center">
+          {/* Search */}
           <div className="relative flex-1">
             <Search
               size={18}
@@ -177,6 +177,32 @@ export default function Dashboard() {
               className="w-full rounded-xl border px-10 py-2.5 text-sm"
             />
           </div>
+
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="rounded-xl border px-4 py-2.5 text-sm"
+          >
+            <option value="ALL">All Status</option>
+            <option value="TODO">Todo</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="REVIEW">Review</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+
+          {/* Priority Filter */}
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="rounded-xl border px-4 py-2.5 text-sm"
+          >
+            <option value="ALL">All Priority</option>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+            <option value="URGENT">Urgent</option>
+          </select>
         </div>
 
         {/* Loading */}
@@ -221,7 +247,7 @@ export default function Dashboard() {
   );
 }
 
-/* ---------------- Small UI Helper ---------------- */
+/* ---------------- Stat Card ---------------- */
 function Stat({
   label,
   value,
@@ -231,10 +257,17 @@ function Stat({
   value: number;
   color?: string;
 }) {
+  const colors: any = {
+    gray: "bg-gray-100",
+    green: "bg-green-100",
+    yellow: "bg-yellow-100",
+    blue: "bg-blue-100",
+  };
+
   return (
-    <div className={`rounded-2xl bg-${color}-100/70 p-5 shadow`}>
-      <p className="text-sm">{label}</p>
-      <p className="mt-1 text-3xl font-bold">{value}</p>
+    <div className={`rounded-2xl ${colors[color]} p-5 shadow`}>
+      <p className="text-sm text-gray-600">{label}</p>
+      <p className="mt-1 text-3xl font-bold text-gray-900">{value}</p>
     </div>
   );
 }
