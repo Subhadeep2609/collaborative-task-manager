@@ -7,7 +7,16 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider, useAuth } from "./context/auth.context";
 
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  // ⏳ Wait for auth check to finish
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Checking authentication...
+      </div>
+    );
+  }
 
   return (
     <Routes>
@@ -18,8 +27,14 @@ function AppRoutes() {
       />
 
       {/* Auth */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/dashboard" /> : <Login />}
+      />
+      <Route
+        path="/register"
+        element={user ? <Navigate to="/dashboard" /> : <Register />}
+      />
 
       {/* Protected Dashboard */}
       <Route
@@ -30,6 +45,9 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
