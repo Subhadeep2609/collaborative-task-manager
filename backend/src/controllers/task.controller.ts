@@ -1,30 +1,35 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
-import {
-  createTaskDto,
-  updateTaskDto,
-} from "../dtos/task.dto";
+import { createTaskDto, updateTaskDto } from "../dtos/task.dto";
 import * as taskService from "../services/task.service";
 
 export const createTask = async (req: AuthRequest, res: Response) => {
   const data = createTaskDto.parse(req.body);
+
   const task = await taskService.createTaskService(req.userId!, data);
+
   res.status(201).json(task);
 };
 
-export const getTasks = async (_req: Request, res: Response) => {
-  const tasks = await taskService.getTasksService();
+export const getTasks = async (req: AuthRequest, res: Response) => {
+  const tasks = await taskService.getTasksService(req.userId!);
   res.json(tasks);
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response) => {
   const data = updateTaskDto.parse(req.body);
-  const task = await taskService.updateTaskService(req.params.id, data);
+
+  const task = await taskService.updateTaskService(
+    req.userId!,
+    req.params.id,
+    data
+  );
+
   res.json(task);
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
-  await taskService.deleteTaskService(req.params.id);
+export const deleteTask = async (req: AuthRequest, res: Response) => {
+  await taskService.deleteTaskService(req.userId!, req.params.id);
   res.status(204).send();
 };
 

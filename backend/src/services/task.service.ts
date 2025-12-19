@@ -2,28 +2,32 @@ import * as taskRepo from "../repositories/task.repository";
 import { io } from "../server";
 import { getUserSocket } from "../sockets";
 
-export const createTaskService = async (creatorId: string, data: any) => {
+export const createTaskService = async (userId: string, data: any) => {
   const task = await taskRepo.createTask({
     ...data,
-    creatorId,
-    dueDate: new Date(data.dueDate),
+    assignedToId: userId, // ✅ correct FK
   });
 
-  // Real-time update
+  // Real-time update (safe broadcast)
   io.emit("taskCreated", task);
 
   return task;
 };
 
-export const getTasksService = async () => {
-  return taskRepo.getAllTasks();
+export const getTasksService = async (userId: string) => {
+  return taskRepo.getTasksByUser(userId);
 };
 
-export const updateTaskService = async (id: string, data: any) => {
-  const task = await taskRepo.updateTask(id, data);
+export const updateTaskService = async (
+  userId: string,
+  taskId: string,
+  data: any
+) => {
+  const task = await taskRepo.updateTask(taskId, userId, data);
 
   io.emit("taskUpdated", task);
 
+  // Notify newly assigned user (if reassigned)
   if (data.assignedToId) {
     const socketId = getUserSocket(data.assignedToId);
 
@@ -38,9 +42,11 @@ export const updateTaskService = async (id: string, data: any) => {
   return task;
 };
 
-export const deleteTaskService = async (id: string) => {
-  const task = await taskRepo.deleteTask(id);
+export const deleteTaskService = async (userId: string, taskId: string) => {
+  const task = await taskRepo.deleteTask(taskId, userId);
+
   io.emit("taskDeleted", task.id);
+
   return task;
 };
 

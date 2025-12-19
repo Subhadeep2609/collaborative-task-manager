@@ -1,42 +1,63 @@
 import prisma from "../prisma/prismaClient";
 
+/**
+ * Create task assigned to a user
+ */
 export const createTask = (data: any) => {
-  return prisma.task.create({ data });
-};
-
-export const getAllTasks = () => {
-  return prisma.task.findMany({
-    include: {
-      creator: { select: { id: true, name: true, email: true } },
-      assignee: { select: { id: true, name: true, email: true } },
-    },
-    orderBy: { dueDate: "asc" },
+  return prisma.task.create({
+    data,
   });
 };
 
-export const getTaskById = (id: string) => {
-  return prisma.task.findUnique({ where: { id } });
-};
-
-export const updateTask = (id: string, data: any) => {
-  return prisma.task.update({ where: { id }, data });
-};
-
-export const deleteTask = (id: string) => {
-  return prisma.task.delete({ where: { id } });
-};
-
-export const getDashboardTasks = (userId: string) => {
-  const now = new Date();
-
+/**
+ * Get tasks only for logged-in user
+ */
+export const getTasksByUser = (userId: string) => {
   return prisma.task.findMany({
     where: {
-      OR: [
-        { assignedToId: userId },
-        { creatorId: userId },
-        { dueDate: { lt: now }, status: { not: "COMPLETED" } },
-      ],
+      assignedToId: userId,
     },
-    orderBy: { dueDate: "asc" },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+/**
+ * Update task ONLY if it belongs to user
+ */
+export const updateTask = (
+  taskId: string,
+  userId: string,
+  data: any
+) => {
+  return prisma.task.updateMany({
+    where: {
+      id: taskId,
+      assignedToId: userId,
+    },
+    data,
+  });
+};
+
+/**
+ * Delete task ONLY if it belongs to user
+ */
+export const deleteTask = (taskId: string, userId: string) => {
+  return prisma.task.deleteMany({
+    where: {
+      id: taskId,
+      assignedToId: userId,
+    },
+  });
+};
+
+/**
+ * Dashboard summary tasks
+ */
+export const getDashboardTasks = (userId: string) => {
+  return prisma.task.findMany({
+    where: {
+      assignedToId: userId,
+    },
+    orderBy: { createdAt: "desc" },
   });
 };
