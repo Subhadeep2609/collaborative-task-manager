@@ -11,6 +11,7 @@ import { Search, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/auth.context";
 import { useNavigate } from "react-router-dom";
+import TaskSkeleton from "../components/TaskSkeleton";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -90,9 +91,7 @@ export default function Dashboard() {
 
   // 📊 Stats
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(
-    (t) => t.status === "COMPLETED"
-  ).length;
+  const completedTasks = tasks.filter((t) => t.status === "COMPLETED").length;
   const inProgressTasks = tasks.filter(
     (t) => t.status === "IN_PROGRESS"
   ).length;
@@ -106,9 +105,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">
-              My Tasks
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900">My Tasks</h1>
             <p className="mt-1 text-gray-600">
               Manage, track and complete your work efficiently
             </p>
@@ -206,8 +203,10 @@ export default function Dashboard() {
 
         {/* Loading */}
         {loading && (
-          <div className="text-center text-gray-600">
-            Loading tasks...
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <TaskSkeleton key={i} />
+            ))}
           </div>
         )}
 
@@ -217,9 +216,7 @@ export default function Dashboard() {
             <p className="text-xl font-semibold text-gray-800">
               No matching tasks
             </p>
-            <p className="mt-2 text-gray-500">
-              Try adjusting your filters 🔍
-            </p>
+            <p className="mt-2 text-gray-500">Try adjusting your filters 🔍</p>
           </div>
         )}
 
