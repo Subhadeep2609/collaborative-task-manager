@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
 import { initSocket } from "./sockets";
+import commentRoutes from "./routes/comment.routes";
 
 
 dotenv.config();
@@ -40,6 +41,8 @@ app.use(cookieParser() as express.RequestHandler);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/comments", commentRoutes);
+
 
 // Health check
 app.get("/api/health", (_req, res) => {

@@ -1,4 +1,6 @@
-import { Trash2, CalendarDays } from "lucide-react";
+import { Trash2, CalendarDays, MessageSquare } from "lucide-react";
+import { useState } from "react";
+import CommentList from "./CommentList";
 
 interface TaskCardProps {
   task: any;
@@ -24,9 +26,12 @@ export default function TaskCard({
   onDelete,
   onStatusChange,
 }: TaskCardProps) {
+  const [showComments, setShowComments] = useState(false);
+
   return (
     <div className="group relative rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 p-6">
-      {/* Top Row */}
+      
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-lg font-semibold text-gray-900 leading-snug">
           {task.title}
@@ -67,14 +72,33 @@ export default function TaskCard({
           <option value="COMPLETED">Completed</option>
         </select>
 
-        <button
-          onClick={() => onDelete(task.id)}
-          className="flex items-center gap-1 text-red-500 opacity-0 group-hover:opacity-100 transition"
-        >
-          <Trash2 size={16} />
-          <span className="text-sm">Delete</span>
-        </button>
+        <div className="flex items-center gap-4">
+          {/* Toggle Comments */}
+          <button
+            onClick={() => setShowComments((prev) => !prev)}
+            className="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition text-sm"
+          >
+            <MessageSquare size={16} />
+            {showComments ? "Hide" : "Comments"}
+          </button>
+
+          {/* Delete */}
+          <button
+            onClick={() => onDelete(task.id)}
+            className="flex items-center gap-1 text-red-500 opacity-0 group-hover:opacity-100 transition"
+          >
+            <Trash2 size={16} />
+            <span className="text-sm">Delete</span>
+          </button>
+        </div>
       </div>
+
+      {/* Comments Section */}
+      {showComments && (
+        <div className="mt-5 border-t border-gray-200 pt-4">
+          <CommentList taskId={task.id} />
+        </div>
+      )}
     </div>
   );
 }
