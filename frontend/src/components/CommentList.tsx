@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { socket } from "../lib/socket";
+import { getSocket, connectSocket } from "../lib/socket";
 import { getTaskComments, addComment } from "../api/comment.api";
 import toast from "react-hot-toast";
 
@@ -8,18 +8,21 @@ export default function CommentList({ taskId }: { taskId: string }) {
   const [text, setText] = useState("");
 
   useEffect(() => {
-    // Join task room
+    const socket = connectSocket();
+
+    // join room
     socket.emit("join-task", taskId);
 
-    // Initial load
+    // initial fetch
     getTaskComments(taskId).then(setComments);
 
-    // Listen for realtime comments
+    // realtime listener
     socket.on("comment:new", (comment) => {
       setComments((prev) => [...prev, comment]);
     });
 
     return () => {
+      socket.emit("leave-task", taskId);
       socket.off("comment:new");
     };
   }, [taskId]);
