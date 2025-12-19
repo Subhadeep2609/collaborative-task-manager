@@ -7,9 +7,10 @@ import {
 } from "../api/task.api";
 import TaskCard from "../components/TaskCard";
 import CreateTaskModal from "../components/CreateTaskModal";
-import { Search } from "lucide-react";
+import { Search, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
-
+import { useAuth } from "../context/auth.context";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -20,6 +21,9 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -33,38 +37,41 @@ export default function Dashboard() {
   }, []);
 
   const handleCreate = async (data: any) => {
-  try {
-    await createTask(data);
-    toast.success("Task created successfully");
-    setShowModal(false);
-    fetchTasks();
-  } catch {
-    toast.error("Failed to create task");
-  }
-};
-
+    try {
+      await createTask(data);
+      toast.success("Task created successfully");
+      setShowModal(false);
+      fetchTasks();
+    } catch {
+      toast.error("Failed to create task");
+    }
+  };
 
   const handleStatusChange = async (id: string, status: string) => {
-  try {
-    await updateTaskStatus(id, status);
-    toast.success("Task updated");
-    fetchTasks();
-  } catch {
-    toast.error("Failed to update task");
-  }
-};
-
+    try {
+      await updateTaskStatus(id, status);
+      toast.success("Task updated");
+      fetchTasks();
+    } catch {
+      toast.error("Failed to update task");
+    }
+  };
 
   const handleDelete = async (id: string) => {
-  try {
-    await deleteTask(id);
-    toast.success("Task deleted");
-    fetchTasks();
-  } catch {
-    toast.error("Failed to delete task");
-  }
-};
+    try {
+      await deleteTask(id);
+      toast.success("Task deleted");
+      fetchTasks();
+    } catch {
+      toast.error("Failed to delete task");
+    }
+  };
 
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
 
   // 🔥 Filtered tasks
   const filteredTasks = tasks.filter((task) => {
@@ -81,8 +88,11 @@ export default function Dashboard() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
+  // 📊 Stats
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((t) => t.status === "COMPLETED").length;
+  const completedTasks = tasks.filter(
+    (t) => t.status === "COMPLETED"
+  ).length;
   const inProgressTasks = tasks.filter(
     (t) => t.status === "IN_PROGRESS"
   ).length;
@@ -96,18 +106,30 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">My Tasks</h1>
+            <h1 className="text-4xl font-bold text-gray-900">
+              My Tasks
+            </h1>
             <p className="mt-1 text-gray-600">
               Manage, track and complete your work efficiently
             </p>
           </div>
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 hover:scale-[1.02] transition"
-          >
-            + New Task
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowModal(true)}
+              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 hover:scale-[1.02] transition"
+            >
+              + New Task
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -143,7 +165,6 @@ export default function Dashboard() {
 
         {/* 🔍 Filters Bar */}
         <div className="flex flex-col gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-xl shadow sm:flex-row sm:items-center">
-          {/* Search */}
           <div className="relative flex-1">
             <Search
               size={18}
@@ -158,7 +179,6 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -171,7 +191,6 @@ export default function Dashboard() {
             <option value="COMPLETED">Completed</option>
           </select>
 
-          {/* Priority Filter */}
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
@@ -187,7 +206,9 @@ export default function Dashboard() {
 
         {/* Loading */}
         {loading && (
-          <div className="text-center text-gray-600">Loading tasks...</div>
+          <div className="text-center text-gray-600">
+            Loading tasks...
+          </div>
         )}
 
         {/* Empty State */}
@@ -196,7 +217,9 @@ export default function Dashboard() {
             <p className="text-xl font-semibold text-gray-800">
               No matching tasks
             </p>
-            <p className="mt-2 text-gray-500">Try adjusting your filters 🔍</p>
+            <p className="mt-2 text-gray-500">
+              Try adjusting your filters 🔍
+            </p>
           </div>
         )}
 
