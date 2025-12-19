@@ -1,25 +1,23 @@
 import { z } from "zod";
 
-/**
- * Create Task DTO
- * - Frontend sends only title & description
- * - Backend injects assignedToId
- * - Defaults handled by Prisma / backend
- */
 export const createTaskDto = z.object({
-  title: z.string().min(1).max(100),
+  title: z.string().min(1),
   description: z.string().optional(),
+  dueDate: z.string().optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+  status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "COMPLETED"]),
 
-  // Optional fields (can be added later)
-  dueDate: z.string().datetime().optional(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
-  status: z
-    .enum(["TODO", "IN_PROGRESS", "REVIEW", "COMPLETED"])
-    .optional(),
+  // 🔥 THIS WAS MISSING
+  assignedToId: z.string().uuid().optional(),
 });
 
-/**
- * Update Task DTO
- * - Partial update allowed
- */
-export const updateTaskDto = createTaskDto.partial();
+export const updateTaskDto = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  dueDate: z.string().optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
+  status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "COMPLETED"]).optional(),
+
+  // 🔥 ALSO REQUIRED HERE
+  assignedToId: z.string().uuid().optional(),
+});

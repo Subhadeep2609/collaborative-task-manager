@@ -20,18 +20,20 @@ model User {
 }
 
 model Task {
-  id           String   @id @default(uuid())
-  title        String   @db.VarChar(100)
-  description  String
-  dueDate      DateTime
-  priority     Priority
-  status       Status
-  creatorId    String
-  assignedToId String
-  createdAt    DateTime @default(now())
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(100)
+  description String
+  dueDate     DateTime
+  priority    Priority
+  status      Status
+  createdAt   DateTime @default(now())
 
-  creator  User      @relation("createdTasks", fields: [creatorId], references: [id])
-  assignee User      @relation("assignedTasks", fields: [assignedToId], references: [id])
+  creatorId    String
+  assignedToId String?
+
+  creator  User  @relation("createdTasks", fields: [creatorId], references: [id])
+  assignee User? @relation("assignedTasks", fields: [assignedToId], references: [id])
+
   comments Comment[]
 }
 
