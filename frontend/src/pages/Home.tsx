@@ -1,58 +1,59 @@
 import { Link } from "react-router-dom";
-import { CheckCircle, Users, ShieldCheck, ListChecks } from "lucide-react";
+import { CheckCircle, Shield, Users, ListTodo } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
-      {/* ================= HEADER ================= */}
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      {/* NAVBAR */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Task<span className="text-blue-600">Manager</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            TaskManager
           </h1>
 
           <div className="flex items-center gap-4">
             <Link
               to="/login"
-              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition"
+              className="text-sm font-medium text-slate-700 hover:text-blue-600 transition"
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
             >
-              Get Started
+              Register
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 py-24 text-center">
-          <h2 className="text-5xl font-extrabold leading-tight text-gray-900">
-            Organize Work.
+      {/* HERO */}
+      <section className="bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50">
+        <div className="mx-auto max-w-6xl px-6 py-24 text-center">
+          <h2 className="text-5xl font-extrabold tracking-tight text-slate-900">
+            Manage Tasks.
             <br />
             <span className="text-blue-600">Collaborate Better.</span>
           </h2>
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-gray-600">
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-slate-600">
             TaskManager is a modern collaborative task management platform
-            designed to help individuals and teams plan, assign, track and
-            complete tasks efficiently — all from one clean dashboard.
+            designed to help individuals and teams plan, assign, track, and
+            complete work efficiently — all in one place.
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
             <Link
               to="/register"
-              className="rounded-2xl bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-xl hover:bg-blue-700 hover:scale-[1.03] transition"
+              className="rounded-xl bg-blue-600 px-8 py-3 text-base font-semibold text-white shadow hover:bg-blue-700 hover:scale-[1.02] transition"
             >
-              Start Free
+              Get Started
             </Link>
+
             <Link
               to="/login"
-              className="rounded-2xl border border-gray-300 bg-white px-8 py-4 text-lg font-semibold text-gray-800 shadow hover:bg-gray-100 transition"
+              className="rounded-xl border border-slate-300 bg-white px-8 py-3 text-base font-semibold text-slate-700 hover:bg-slate-100 transition"
             >
               Login
             </Link>
@@ -60,142 +61,165 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= FEATURES ================= */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <div className="text-center mb-14">
-          <h3 className="text-3xl font-bold text-gray-900">
-            Everything You Need to Stay Productive
+      {/* FEATURES */}
+      <section className="py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <h3 className="text-center text-3xl font-bold text-slate-900">
+            Everything you need to manage work
           </h3>
-          <p className="mt-3 text-gray-600">
-            Built with modern technologies and real-world workflows in mind.
+
+          <p className="mt-3 text-center text-slate-600">
+            Built with scalability, security, and usability in mind
           </p>
-        </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <FeatureCard
-            icon={<ListChecks className="text-blue-600" />}
-            title="Task Management"
-            desc="Create, update, prioritize and track tasks with deadlines and statuses."
-          />
+          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <Feature
+              icon={<ListTodo className="h-6 w-6 text-blue-600" />}
+              title="Task Management"
+              description="Create, update, prioritize, and track tasks with due dates, priorities, and statuses."
+            />
 
-          <FeatureCard
-            icon={<Users className="text-green-600" />}
-            title="Collaboration"
-            desc="Assign tasks to teammates and track shared progress in real time."
-          />
+            <Feature
+              icon={<Users className="h-6 w-6 text-green-600" />}
+              title="Collaboration"
+              description="Assign tasks to users, track progress, and collaborate efficiently in real time."
+            />
 
-          <FeatureCard
-            icon={<ShieldCheck className="text-purple-600" />}
-            title="Secure Authentication"
-            desc="JWT-based authentication with protected routes and secure APIs."
-          />
+            <Feature
+              icon={<Shield className="h-6 w-6 text-purple-600" />}
+              title="Secure Authentication"
+              description="JWT-based authentication with protected routes to keep user data safe."
+            />
 
-          <FeatureCard
-            icon={<CheckCircle className="text-orange-600" />}
-            title="Progress Tracking"
-            desc="Monitor task states like Todo, In Progress, Review and Completed."
-          />
+            <Feature
+              icon={<CheckCircle className="h-6 w-6 text-orange-600" />}
+              title="Productivity Focused"
+              description="Filters, status tracking, and smart UI to help you stay focused and organized."
+            />
+          </div>
         </div>
       </section>
 
-      {/* ================= HOW IT WORKS ================= */}
-      <section className="bg-white/70 backdrop-blur border-y">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="text-center mb-14">
-            <h3 className="text-3xl font-bold text-gray-900">
-              How TaskManager Works
-            </h3>
-            <p className="mt-3 text-gray-600">
-              Simple steps to keep your work organized.
-            </p>
-          </div>
+      {/* HOW IT WORKS */}
+      <section className="bg-white py-20 border-t">
+        <div className="mx-auto max-w-6xl px-6">
+          <h3 className="text-center text-3xl font-bold text-slate-900">
+            How TaskManager works
+          </h3>
 
-          <div className="grid gap-10 sm:grid-cols-3">
-            <StepCard
+          <div className="mt-14 grid gap-10 md:grid-cols-3">
+            <Step
               step="01"
-              title="Create an Account"
-              desc="Sign up in seconds and securely access your workspace."
+              title="Register & Login"
+              description="Create your account securely and access your personalized dashboard."
             />
-            <StepCard
+            <Step
               step="02"
-              title="Add & Assign Tasks"
-              desc="Create tasks, set priorities, deadlines and assign them."
+              title="Create & Assign Tasks"
+              description="Add tasks with priorities, due dates, and assign them to collaborators."
             />
-            <StepCard
+            <Step
               step="03"
               title="Track & Complete"
-              desc="Update task status and monitor progress from your dashboard."
+              description="Update task status, monitor progress, and complete work efficiently."
             />
           </div>
         </div>
       </section>
 
-      {/* ================= CTA ================= */}
-      <section className="mx-auto max-w-7xl px-6 py-24 text-center">
-        <h3 className="text-4xl font-bold text-gray-900">
-          Ready to Get Organized?
+      {/* TECH STACK */}
+      <section className="py-20">
+        <div className="mx-auto max-w-6xl px-6 text-center">
+          <h3 className="text-3xl font-bold text-slate-900">
+            Built with modern technologies
+          </h3>
+
+          <p className="mt-4 text-slate-600">
+            Designed for performance, scalability, and maintainability
+          </p>
+
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            {[
+              "React",
+              "TypeScript",
+              "Tailwind CSS",
+              "Node.js",
+              "Express",
+              "Prisma",
+              "PostgreSQL",
+              "JWT Auth",
+            ].map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-blue-600 py-20 text-center text-white">
+        <h3 className="text-3xl font-bold">
+          Ready to organize your work better?
         </h3>
-        <p className="mt-4 text-gray-600">
-          Start managing your tasks efficiently today.
+        <p className="mt-3 text-blue-100">
+          Start managing tasks efficiently with TaskManager today.
         </p>
 
         <Link
           to="/register"
-          className="mt-8 inline-block rounded-2xl bg-blue-600 px-10 py-4 text-lg font-semibold text-white shadow-xl hover:bg-blue-700 hover:scale-[1.04] transition"
+          className="mt-8 inline-block rounded-xl bg-white px-8 py-3 text-base font-semibold text-blue-600 hover:bg-blue-50 transition"
         >
-          Create Your Free Account
+          Create Free Account
         </Link>
       </section>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="border-t bg-white/80 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-6 py-6 text-center text-sm text-gray-600">
-          © {new Date().getFullYear()} TaskManager — Created by{" "}
-          <span className="font-semibold text-gray-900">
-            Subhadeep Saha
-          </span>
-        </div>
+      {/* FOOTER */}
+      <footer className="border-t bg-slate-100 py-6 text-center text-sm text-slate-600">
+        © {new Date().getFullYear()} TaskManager — Created by{" "}
+        <span className="font-semibold">Subhadeep Saha</span>
       </footer>
     </div>
   );
 }
 
-/* ================= SMALL COMPONENTS ================= */
+/* ---------------- Components ---------------- */
 
-function FeatureCard({
+function Feature({
   icon,
   title,
-  desc,
+  description,
 }: {
   icon: React.ReactNode;
   title: string;
-  desc: string;
+  description: string;
 }) {
   return (
-    <div className="rounded-3xl bg-white/70 backdrop-blur p-6 shadow hover:shadow-lg transition">
+    <div className="rounded-2xl bg-white p-6 shadow hover:shadow-lg transition">
       <div className="mb-4">{icon}</div>
-      <h4 className="text-lg font-semibold text-gray-900">{title}</h4>
-      <p className="mt-2 text-sm text-gray-600">{desc}</p>
+      <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
+      <p className="mt-2 text-sm text-slate-600">{description}</p>
     </div>
   );
 }
 
-function StepCard({
+function Step({
   step,
   title,
-  desc,
+  description,
 }: {
   step: string;
   title: string;
-  desc: string;
+  description: string;
 }) {
   return (
-    <div className="rounded-3xl bg-white p-8 shadow hover:shadow-lg transition text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white font-bold">
-        {step}
-      </div>
-      <h4 className="text-lg font-semibold text-gray-900">{title}</h4>
-      <p className="mt-2 text-sm text-gray-600">{desc}</p>
+    <div className="rounded-2xl bg-slate-50 p-6 shadow-sm">
+      <span className="text-sm font-bold text-blue-600">{step}</span>
+      <h4 className="mt-2 text-xl font-semibold text-slate-900">{title}</h4>
+      <p className="mt-2 text-slate-600">{description}</p>
     </div>
   );
 }
