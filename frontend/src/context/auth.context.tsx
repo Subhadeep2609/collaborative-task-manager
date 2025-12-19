@@ -20,11 +20,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMe()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+  const initAuth = async () => {
+    try {
+      const me = await getMe();
+      setUser(me);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  initAuth();
+}, []);
+
 
   return (
     <AuthContext.Provider value={{ user, loading, setUser }}>
