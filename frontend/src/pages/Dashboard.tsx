@@ -3,7 +3,7 @@ import {
   getTasks,
   createTask,
   updateTaskStatus,
-  updateTask, // ✅ NEW
+  updateTask,
   deleteTask,
 } from "../api/task.api";
 import TaskCard from "../components/TaskCard";
@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  // 🔍 Filters
+  // Filters
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
@@ -27,17 +27,22 @@ export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  /* ---------------- Fetch Tasks ---------------- */
   const fetchTasks = async () => {
     setLoading(true);
-    const data = await getTasks();
-    setTasks(data);
-    setLoading(false);
+    try {
+      const data = await getTasks();
+      setTasks(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
+  /* ---------------- Create ---------------- */
   const handleCreate = async (data: any) => {
     try {
       await createTask(data);
@@ -49,33 +54,18 @@ export default function Dashboard() {
     }
   };
 
+  /* ---------------- Status Change ---------------- */
   const handleStatusChange = async (id: string, status: string) => {
     try {
-      await updateTaskStatus(id, status as any);
-      toast.success("Task updated");
+      await updateTaskStatus(id, status);
+      toast.success("Status updated");
       fetchTasks();
     } catch {
-      toast.error("Failed to update task");
+      toast.error("Failed to update status");
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteTask(id);
-      toast.success("Task deleted");
-      fetchTasks();
-    } catch {
-      toast.error("Failed to delete task");
-    }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    toast.success("Logged out successfully");
-    navigate("/");
-  };
-
-  // ✅ FIXED: assignee change uses updateTask
+  /* ---------------- Assignee Change ---------------- */
   const handleAssigneeChange = async (
     id: string,
     assignedToId: string
@@ -90,7 +80,25 @@ export default function Dashboard() {
     }
   };
 
-  // 🔥 Filtered tasks
+  /* ---------------- Delete ---------------- */
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteTask(id);
+      toast.success("Task deleted");
+      fetchTasks();
+    } catch {
+      toast.error("Failed to delete task");
+    }
+  };
+
+  /* ---------------- Logout ---------------- */
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
+
+  /* ---------------- Filtering ---------------- */
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -105,7 +113,7 @@ export default function Dashboard() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  // 📊 Stats
+  /* ---------------- Stats ---------------- */
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((t) => t.status === "COMPLETED").length;
   const inProgressTasks = tasks.filter(
@@ -131,14 +139,14 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowModal(true)}
-              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 hover:scale-[1.02] transition"
+              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 transition"
             >
               + New Task
             </button>
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition"
+              className="flex items-center gap-2 rounded-xl border bg-white px-4 py-3 text-sm hover:bg-red-50 hover:text-red-600 transition"
             >
               <LogOut size={16} />
               Logout
@@ -148,36 +156,13 @@ export default function Dashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-2xl bg-white/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
-            <p className="text-sm text-gray-500">Total Tasks</p>
-            <p className="mt-1 text-3xl font-bold text-gray-900">
-              {totalTasks}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-green-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
-            <p className="text-sm text-green-700">Completed</p>
-            <p className="mt-1 text-3xl font-bold text-green-800">
-              {completedTasks}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-yellow-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
-            <p className="text-sm text-yellow-700">In Progress</p>
-            <p className="mt-1 text-3xl font-bold text-yellow-800">
-              {inProgressTasks}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-blue-100/70 backdrop-blur-xl p-5 shadow hover:shadow-lg transition">
-            <p className="text-sm text-blue-700">Pending</p>
-            <p className="mt-1 text-3xl font-bold text-blue-800">
-              {pendingTasks}
-            </p>
-          </div>
+          <Stat label="Total Tasks" value={totalTasks} />
+          <Stat label="Completed" value={completedTasks} color="green" />
+          <Stat label="In Progress" value={inProgressTasks} color="yellow" />
+          <Stat label="Pending" value={pendingTasks} color="blue" />
         </div>
 
-        {/* 🔍 Filters Bar */}
+        {/* Filters */}
         <div className="flex flex-col gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-xl shadow sm:flex-row sm:items-center">
           <div className="relative flex-1">
             <Search
@@ -189,33 +174,9 @@ export default function Dashboard() {
               placeholder="Search tasks..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 bg-white px-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border px-10 py-2.5 text-sm"
             />
           </div>
-
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="ALL">All Status</option>
-            <option value="TODO">Todo</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="REVIEW">Review</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
-
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="ALL">All Priority</option>
-            <option value="LOW">Low</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HIGH">High</option>
-            <option value="URGENT">Urgent</option>
-          </select>
         </div>
 
         {/* Loading */}
@@ -227,17 +188,14 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty */}
         {!loading && filteredTasks.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-gray-300 bg-white/60 p-14 text-center backdrop-blur-xl">
-            <p className="text-xl font-semibold text-gray-800">
-              No matching tasks
-            </p>
-            <p className="mt-2 text-gray-500">Try adjusting your filters 🔍</p>
+          <div className="rounded-3xl border border-dashed bg-white/60 p-14 text-center">
+            <p className="text-xl font-semibold">No matching tasks</p>
           </div>
         )}
 
-        {/* Task Grid */}
+        {/* Tasks */}
         {!loading && filteredTasks.length > 0 && (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTasks.map((task) => (
@@ -245,21 +203,38 @@ export default function Dashboard() {
                 key={task.id}
                 task={task}
                 onStatusChange={handleStatusChange}
-                onDelete={handleDelete}
                 onAssigneeChange={handleAssigneeChange}
+                onDelete={handleDelete}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Modal */}
       {showModal && (
         <CreateTaskModal
           onClose={() => setShowModal(false)}
           onCreate={handleCreate}
         />
       )}
+    </div>
+  );
+}
+
+/* ---------------- Small UI Helper ---------------- */
+function Stat({
+  label,
+  value,
+  color = "gray",
+}: {
+  label: string;
+  value: number;
+  color?: string;
+}) {
+  return (
+    <div className={`rounded-2xl bg-${color}-100/70 p-5 shadow`}>
+      <p className="text-sm">{label}</p>
+      <p className="mt-1 text-3xl font-bold">{value}</p>
     </div>
   );
 }
