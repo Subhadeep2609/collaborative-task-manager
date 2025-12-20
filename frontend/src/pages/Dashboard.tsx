@@ -16,6 +16,7 @@ import TaskSkeleton from "../components/TaskSkeleton";
 import { connectSocket, disconnectSocket, getSocket } from "../lib/socket";
 import { useRef } from "react";
 
+
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
