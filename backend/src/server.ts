@@ -1,19 +1,19 @@
-import express, { Application } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
-import { RequestHandler } from "express";
+
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
 import commentRoutes from "./routes/comment.routes";
 import userRoutes from "./routes/user.routes";
 
-
 dotenv.config();
 
-const app: Application = express();
+/* ------------------ APP ------------------ */
+const app = express();
 
 /* ------------------ HTTP + SOCKET SERVER ------------------ */
 const server = http.createServer(app);
@@ -29,7 +29,6 @@ export const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("🟢 Socket connected:", socket.id);
 
-  // Join a task-specific room
   socket.on("join-task", (taskId: string) => {
     socket.join(`task-${taskId}`);
     console.log(`📌 Socket ${socket.id} joined task-${taskId}`);
@@ -49,7 +48,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(cookieParser() as RequestHandler);
+app.use(cookieParser());
 
 /* ------------------ ROUTES ------------------ */
 app.use("/api/auth", authRoutes);
@@ -57,9 +56,8 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/users", userRoutes);
 
-
 /* ------------------ HEALTH CHECK ------------------ */
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", (_req: express.Request, res: express.Response) => {
   res.status(200).json({ status: "OK" });
 });
 
