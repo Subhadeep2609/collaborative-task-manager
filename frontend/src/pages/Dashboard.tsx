@@ -13,6 +13,8 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/auth.context";
 import { useNavigate } from "react-router-dom";
 import TaskSkeleton from "../components/TaskSkeleton";
+import { connectSocket, disconnectSocket, getSocket } from "../lib/socket";
+import { useRef } from "react";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -27,7 +29,14 @@ export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  /* ---------------- Fetch Tasks ---------------- */
+  const { user } = useAuth();
+  const authUserRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    authUserRef.current = user?.id ?? null;
+  }, [user]);
+
+  /* ---------------- Initial Fetch ---------------- */
   const fetchTasks = async () => {
     setLoading(true);
     try {
@@ -38,8 +47,66 @@ export default function Dashboard() {
     }
   };
 
+  /* ---------------- Socket Setup (Order 6) ---------------- */
   useEffect(() => {
     fetchTasks();
+
+    const socket = connectSocket();
+
+    // ✅ Task created
+    socket.on("taskCreated", (task) => {
+      setTasks((prev) => {
+        const userId = authUserRef.current;
+
+        // ✅ show ONLY if user is creator or assignee
+        if (task.creatorId !== userId && task.assignedToId !== userId) {
+          return prev;
+        }
+
+        // prevent duplicates
+        if (prev.some((t) => t.id === task.id)) {
+          return prev;
+        }
+
+        return [task, ...prev];
+      });
+    });
+
+    // ✅ Task updated
+    socket.on("taskUpdated", (updatedTask) => {
+      setTasks((prev) => {
+        const userId = authUserRef.current;
+
+        const isRelevant =
+          updatedTask.creatorId === userId ||
+          updatedTask.assignedToId === userId;
+
+        // ❌ remove task if no longer relevant
+        if (!isRelevant) {
+          return prev.filter((t) => t.id !== updatedTask.id);
+        }
+
+        // ✅ update if exists
+        if (prev.some((t) => t.id === updatedTask.id)) {
+          return prev.map((t) => (t.id === updatedTask.id ? updatedTask : t));
+        }
+
+        // ✅ insert if newly assigned
+        return [updatedTask, ...prev];
+      });
+    });
+
+    // ✅ Task deleted
+    socket.on("taskDeleted", (taskId: string) => {
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    });
+
+    return () => {
+      socket.off("taskCreated");
+      socket.off("taskUpdated");
+      socket.off("taskDeleted");
+      disconnectSocket();
+    };
   }, []);
 
   /* ---------------- Create ---------------- */
@@ -48,7 +115,7 @@ export default function Dashboard() {
       await createTask(data);
       toast.success("Task created successfully");
       setShowModal(false);
-      fetchTasks();
+      // 🔥 no fetch — socket will handle
     } catch {
       toast.error("Failed to create task");
     }
@@ -59,21 +126,16 @@ export default function Dashboard() {
     try {
       await updateTaskStatus(id, status);
       toast.success("Status updated");
-      fetchTasks();
     } catch {
       toast.error("Failed to update status");
     }
   };
 
   /* ---------------- Assignee Change ---------------- */
-  const handleAssigneeChange = async (
-    id: string,
-    assignedToId: string
-  ) => {
+  const handleAssigneeChange = async (id: string, assignedToId: string) => {
     try {
       await updateTask(id, { assignedToId });
       toast.success("Assignee updated");
-      fetchTasks();
     } catch {
       toast.error("Failed to update assignee");
     }
@@ -84,7 +146,6 @@ export default function Dashboard() {
     try {
       await deleteTask(id);
       toast.success("Task deleted");
-      fetchTasks();
     } catch {
       toast.error("Failed to delete task");
     }
@@ -97,7 +158,7 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  /* ---------------- Filtering Logic ---------------- */
+  /* ---------------- Filtering ---------------- */
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -125,7 +186,6 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 px-4 py-10">
       <div className="mx-auto max-w-6xl space-y-10">
-
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -161,9 +221,8 @@ export default function Dashboard() {
           <Stat label="Pending" value={pendingTasks} color="blue" />
         </div>
 
-        {/* 🔍 Filters */}
+        {/* Filters */}
         <div className="flex flex-col gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-xl shadow sm:flex-row sm:items-center">
-          {/* Search */}
           <div className="relative flex-1">
             <Search
               size={18}
@@ -178,7 +237,6 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -191,7 +249,6 @@ export default function Dashboard() {
             <option value="COMPLETED">Completed</option>
           </select>
 
-          {/* Priority Filter */}
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
