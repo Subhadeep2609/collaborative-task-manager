@@ -1,22 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 
-/**
- * Typed Auth Request
- * Generic-friendly & Express-safe
- */
-export interface AuthRequest<
-  Params = any,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = any
-> extends Request<Params, ResBody, ReqBody, ReqQuery> {
+export interface AuthRequest extends Request {
   userId?: string;
 }
 
-/**
- * Auth middleware
- */
 export const requireAuth = (
   req: AuthRequest,
   res: Response,
