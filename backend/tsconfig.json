@@ -6,12 +6,18 @@
     "outDir": "dist",
 
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
 
-    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
     "moduleResolution": "node",
     "resolveJsonModule": true,
+
+    "types": ["node", "express"],
+    "typeRoots": ["./node_modules/@types"],
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }
