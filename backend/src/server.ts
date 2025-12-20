@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
+import { RequestHandler } from "express";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
 import commentRoutes from "./routes/comment.routes";
@@ -48,7 +49,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser() as RequestHandler);
 
 /* ------------------ ROUTES ------------------ */
 app.use("/api/auth", authRoutes);
