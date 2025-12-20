@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSocket, connectSocket } from "../lib/socket";
+import {  connectSocket } from "../lib/socket";
 import { getTaskComments, addComment } from "../api/comment.api";
 import toast from "react-hot-toast";
 

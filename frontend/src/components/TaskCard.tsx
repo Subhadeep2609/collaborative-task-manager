@@ -10,11 +10,13 @@ import {
 import { useAuth } from "../context/auth.context";
 import { getUsers } from "../api/user.api";
 import CommentList from "./CommentList";
+type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "COMPLETED";
+
 
 interface TaskCardProps {
   task: any;
   onDelete: (id: string) => void;
-  onStatusChange: (id: string, status: string) => void;
+  onStatusChange: (id: string, status: TaskStatus) => void;
   onAssigneeChange?: (id: string, assignedToId: string) => void;
 }
 
@@ -118,7 +120,7 @@ export default function TaskCard({
         <select
           value={task.status}
           onChange={(e) =>
-            onStatusChange(task.id, e.target.value)
+            onStatusChange(task.id, e.target.value as TaskStatus)
           }
           className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >

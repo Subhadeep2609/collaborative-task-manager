@@ -13,8 +13,10 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/auth.context";
 import { useNavigate } from "react-router-dom";
 import TaskSkeleton from "../components/TaskSkeleton";
-import { connectSocket, disconnectSocket, getSocket } from "../lib/socket";
+import { connectSocket, disconnectSocket } from "../lib/socket";
 import { useRef } from "react";
+type TaskStatus = "TODO" | "IN_PROGRESS" | "REVIEW" | "COMPLETED";
+
 
 
 export default function Dashboard() {
@@ -123,7 +125,7 @@ export default function Dashboard() {
   };
 
   /* ---------------- Status Change ---------------- */
-  const handleStatusChange = async (id: string, status: string) => {
+  const handleStatusChange = async (id: string, status: TaskStatus) => {
     try {
       await updateTaskStatus(id, status);
       toast.success("Status updated");
