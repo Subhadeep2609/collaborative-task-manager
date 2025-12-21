@@ -1,7 +1,4 @@
-declare module 'express';
-declare module 'cookie-parser';
-declare module 'bcrypt';
-declare module 'jsonwebtoken';
+
 import { Request } from 'express';
 
 declare global {
