@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { registerDto, loginDto } from "../dtos/auth.dto";
 import { registerUser, loginUser } from "../services/auth.service";
 import { AuthRequest } from "../middleware/auth.middleware";
@@ -7,7 +7,10 @@ import {
   updateUserName,
 } from "../repositories/user.repository";
 
-export const register = async (req: Request, res: Response) => {
+/**
+ * Register new user
+ */
+export const register = async (req: AuthRequest, res: Response) => {
   const data = registerDto.parse(req.body);
 
   const { token, user } = await registerUser(
@@ -19,10 +22,17 @@ export const register = async (req: Request, res: Response) => {
   res
     .cookie("token", token, { httpOnly: true })
     .status(201)
-    .json({ id: user.id, name: user.name, email: user.email });
+    .json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
 };
 
-export const login = async (req: Request, res: Response) => {
+/**
+ * Login user
+ */
+export const login = async (req: AuthRequest, res: Response) => {
   const data = loginDto.parse(req.body);
 
   const { token, user } = await loginUser(data.email, data.password);
@@ -30,16 +40,27 @@ export const login = async (req: Request, res: Response) => {
   res
     .cookie("token", token, { httpOnly: true })
     .status(200)
-    .json({ id: user.id, name: user.name, email: user.email });
+    .json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
 };
 
+/**
+ * Get logged-in user
+ */
 export const me = async (req: AuthRequest, res: Response) => {
   const user = await findUserById(req.userId!);
   res.json(user);
 };
 
+/**
+ * Update profile (name only)
+ */
 export const updateProfile = async (req: AuthRequest, res: Response) => {
-  const { name } = req.body;
+  const { name } = req.body as { name: string };
+
   const user = await updateUserName(req.userId!, name);
   res.json(user);
 };

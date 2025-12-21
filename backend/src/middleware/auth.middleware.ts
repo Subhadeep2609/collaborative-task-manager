@@ -1,10 +1,21 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 
+/**
+ * AuthRequest
+ * Extends Express Request to include userId and cookies
+ */
 export interface AuthRequest extends Request {
   userId?: string;
+  cookies: {
+    token?: string;
+    [key: string]: any;
+  };
 }
 
+/**
+ * Authentication middleware
+ */
 export const requireAuth = (
   req: AuthRequest,
   res: Response,
