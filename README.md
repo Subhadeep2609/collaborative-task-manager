@@ -82,8 +82,8 @@ collaborative-task-manager/
 
 
 🌐 Live Demo
-  Frontend: 
-  Backend:
+  Frontend: https://collaborative-task-manager-gui1.vercel.app/
+ 
 
 👤 Author
 
