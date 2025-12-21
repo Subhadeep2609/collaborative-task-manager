@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import {
   register,
   login,
@@ -16,7 +16,7 @@ router.post("/login", login);
 router.get("/me", requireAuth, me);
 router.put("/profile", requireAuth, updateProfile);
 
-router.post("/logout", (_req, res) => {
+router.post("/logout", (_req: Request, res: Response) => {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "lax",

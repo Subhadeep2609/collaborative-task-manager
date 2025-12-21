@@ -10,7 +10,7 @@ import {
 /**
  * Register new user
  */
-export const register = async (req: AuthRequest, res: Response) => {
+export const register = async (req: AuthRequest, res: Response): Promise<void> => {
   const data = registerDto.parse(req.body);
 
   const { token, user } = await registerUser(
@@ -32,7 +32,7 @@ export const register = async (req: AuthRequest, res: Response) => {
 /**
  * Login user
  */
-export const login = async (req: AuthRequest, res: Response) => {
+export const login = async (req: AuthRequest, res: Response): Promise<void> => {
   const data = loginDto.parse(req.body);
 
   const { token, user } = await loginUser(data.email, data.password);
@@ -50,7 +50,7 @@ export const login = async (req: AuthRequest, res: Response) => {
 /**
  * Get logged-in user
  */
-export const me = async (req: AuthRequest, res: Response) => {
+export const me = async (req: AuthRequest, res: Response): Promise<void> => {
   const user = await findUserById(req.userId!);
   res.json(user);
 };
@@ -58,7 +58,7 @@ export const me = async (req: AuthRequest, res: Response) => {
 /**
  * Update profile (name only)
  */
-export const updateProfile = async (req: AuthRequest, res: Response) => {
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   const { name } = req.body as { name: string };
 
   const user = await updateUserName(req.userId!, name);

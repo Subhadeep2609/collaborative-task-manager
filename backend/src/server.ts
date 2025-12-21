@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
@@ -57,7 +57,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/users", userRoutes);
 
 /* ------------------ HEALTH CHECK ------------------ */
-app.get("/api/health", (_req: express.Request, res: express.Response) => {
+app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "OK" });
 });
 

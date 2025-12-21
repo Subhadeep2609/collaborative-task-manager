@@ -11,6 +11,8 @@ export interface AuthRequest extends Request {
     token?: string;
     [key: string]: any;
   };
+  body: any;  // Add body property
+  params: any; // Add params property
 }
 
 /**
@@ -20,11 +22,12 @@ export const requireAuth = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const token = req.cookies?.token;
 
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" });
+    return;
   }
 
   try {
@@ -32,6 +35,6 @@ export const requireAuth = (
     req.userId = payload.userId;
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid token" });
   }
 };

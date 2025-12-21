@@ -6,7 +6,7 @@ import { io } from "../server";
 /**
  * Add comment to a task
  */
-export const addComment = async (req: AuthRequest, res: Response) => {
+export const addComment = async (req: AuthRequest, res: Response): Promise<void> => {
   const { content } = req.body as { content: string };
   const { taskId } = req.params as { taskId: string };
 
@@ -30,7 +30,7 @@ export const addComment = async (req: AuthRequest, res: Response) => {
 /**
  * Get comments of a task
  */
-export const getComments = async (req: AuthRequest, res: Response) => {
+export const getComments = async (req: AuthRequest, res: Response): Promise<void> => {
   const { taskId } = req.params as { taskId: string };
 
   const comments = await prisma.comment.findMany({

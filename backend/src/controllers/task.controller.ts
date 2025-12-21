@@ -6,7 +6,7 @@ import * as taskService from "../services/task.service";
 /**
  * Create task
  */
-export const createTask = async (req: AuthRequest, res: Response) => {
+export const createTask = async (req: AuthRequest, res: Response): Promise<void> => {
   const data = createTaskDto.parse(req.body);
 
   const task = await taskService.createTaskService(req.userId!, data);
@@ -16,7 +16,7 @@ export const createTask = async (req: AuthRequest, res: Response) => {
 /**
  * Get tasks for logged-in user
  */
-export const getTasks = async (req: AuthRequest, res: Response) => {
+export const getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
   const tasks = await taskService.getTasksService(req.userId!);
   res.json(tasks);
 };
@@ -24,7 +24,7 @@ export const getTasks = async (req: AuthRequest, res: Response) => {
 /**
  * Update task (status / assignee)
  */
-export const updateTask = async (req: AuthRequest, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
   const data = updateTaskDto.parse(req.body);
   const taskId = req.params.id as string;
 
@@ -40,7 +40,7 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
 /**
  * Delete task
  */
-export const deleteTask = async (req: AuthRequest, res: Response) => {
+export const deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
   const taskId = req.params.id as string;
 
   await taskService.deleteTaskService(req.userId!, taskId);
@@ -50,7 +50,7 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
 /**
  * Dashboard tasks (creator OR assignee)
  */
-export const dashboard = async (req: AuthRequest, res: Response) => {
+export const dashboard = async (req: AuthRequest, res: Response): Promise<void> => {
   const data = await taskService.getDashboardService(req.userId!);
   res.json(data);
 };

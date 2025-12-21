@@ -12,7 +12,7 @@ export const registerUser = async (
   name: string,
   email: string,
   password: string
-) => {
+): Promise<{ token: string; user: { id: string; name: string; email: string } }> => {
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
@@ -45,7 +45,7 @@ export const registerUser = async (
 /**
  * Login user
  */
-export const loginUser = async (email: string, password: string) => {
+export const loginUser = async (email: string, password: string): Promise<{ token: string; user: { id: string; name: string; email: string } }> => {
   const user = await findUserByEmail(email);
 
   if (!user) {
