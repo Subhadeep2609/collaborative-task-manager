@@ -1,4 +1,4 @@
-import jwt, { JwtPayload as JwtLibPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 /**
  * Ensure JWT secret exists at runtime
@@ -29,13 +29,20 @@ export const signToken = (payload: AppJwtPayload): string => {
  * Verify JWT token
  */
 export const verifyToken = (token: string): AppJwtPayload => {
-  const decoded = jwt.verify(token, JWT_SECRET) as JwtLibPayload;
-
-  if (!decoded || typeof decoded !== "object" || !("userId" in decoded)) {
+  // Cast to unknown first, then to our expected type
+  const decoded = jwt.verify(token, JWT_SECRET) as unknown;
+  
+  if (!decoded || typeof decoded !== "object") {
     throw new Error("Invalid token payload");
+  }
+  
+  const payload = decoded as Record<string, unknown>;
+  
+  if (!payload.userId || typeof payload.userId !== "string") {
+    throw new Error("Invalid token payload: missing userId");
   }
 
   return {
-    userId: decoded.userId as string,
+    userId: payload.userId,
   };
 };
